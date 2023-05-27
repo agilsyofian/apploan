@@ -15,7 +15,7 @@ func main() {
 		fmt.Println("cannot load config")
 	}
 
-	m, err := migrate.New(cfg.MigrationURL, cfg.DBDriver+"://root:root@tcp(127.0.0.1:3306)/kreditplus?charset=utf8mb4&parseTime=True&loc=Local")
+	m, err := migrate.New(cfg.MigrationURL, cfg.DBDriver+"://"+cfg.DBSource)
 	if err != nil {
 		fmt.Println("cannot create new migrate instance")
 	}

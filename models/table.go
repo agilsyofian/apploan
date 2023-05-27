@@ -12,14 +12,10 @@ func (Session) TableName() string {
 	return "session"
 }
 
-func (Limit) TableName() string {
-	return "limit"
-}
-
 func (Kontrak) TableName() string {
 	return "kontrak"
 }
 
-func (Transaksi) TableName() string {
-	return "transaksi"
+func (Config) TableName() string {
+	return "config"
 }

@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `limit`;
-DROP TABLE IF EXISTS `transaksi`;
+DROP TABLE IF EXISTS `config`;
+DROP TABLE IF EXISTS `tagihan`;
 DROP TABLE IF EXISTS `session`;
 DROP TABLE IF EXISTS `kontrak`;
 DROP TABLE IF EXISTS `konsumen`;

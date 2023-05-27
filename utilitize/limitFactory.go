@@ -1,34 +1,30 @@
 package utilitize
 
-import (
-	"time"
-
-	"github.com/agilsyofian/kreditplus/models"
-)
-
-type LimitFactory struct {
-	Konsumen models.Konsumen
+type Limit struct {
+	Tenor int64   `json:"tenor"`
+	Limit float64 `json:"limit"`
 }
 
-func NewFactoryLimit(k models.Konsumen) *LimitFactory {
+type LimitFactory struct {
+	PersenGaji float64
+	Gaji       float64
+}
+
+func NewFactoryLimit(persenGaji, gaji float64) *LimitFactory {
 	return &LimitFactory{
-		Konsumen: k,
+		PersenGaji: persenGaji,
+		Gaji:       gaji,
 	}
 }
 
-func (l *LimitFactory) BuildLimit() []models.Limit {
-	var result []models.Limit
+func (l *LimitFactory) BuildLimit() []Limit {
+	var result []Limit
 
-	rpc := 0.30 * l.Konsumen.Gaji
-	currentTime := time.Now()
-
+	rpc := l.PersenGaji * l.Gaji
 	for i := 1; i <= 4; i++ {
-		result = append(result, models.Limit{
-			KonsumenID: l.Konsumen.ID,
-			Tenor:      int64(i),
-			Limit:      float64(i * int(rpc)),
-			CreatedAt:  currentTime,
-			UpdatedAt:  currentTime,
+		result = append(result, Limit{
+			Tenor: int64(i),
+			Limit: float64(i * int(rpc)),
 		})
 	}
 

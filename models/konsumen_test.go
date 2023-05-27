@@ -92,3 +92,16 @@ func TestSoftDeleteKonsumen(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, result)
 }
+
+func TestBuildProfile(t *testing.T) {
+	konsumen, plainPass, err := createRandomKonsumen(t)
+	require.NoError(t, err)
+	require.NotEmpty(t, konsumen)
+	err = util.CheckPassword(plainPass, konsumen.Password)
+	require.NoError(t, err)
+
+	profile, err := testQueries.BuildProfile(*konsumen)
+	require.NoError(t, err)
+	require.NotEmpty(t, profile)
+	require.Greater(t, profile.Limit[0].Limit, float64(0))
+}

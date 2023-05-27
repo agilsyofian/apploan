@@ -12,6 +12,23 @@ import (
 	"github.com/google/uuid"
 )
 
+type Profile struct {
+	Detail ProfileDetail     `json:"detail"`
+	Limit  []utilitize.Limit `json:"limit"`
+}
+
+type ProfileDetail struct {
+	NIK         int64     `json:"nik"`
+	FullName    string    `json:"full_name"`
+	LegalName   string    `json:"legal_name"`
+	TempatLahir string    `json:"tempat_lahir"`
+	TglLahir    string    `json:"tgl_lahir"`
+	Gaji        float64   `json:"gaji"`
+	FotoKTP     string    `json:"foto_ktp"`
+	FotoSelfie  string    `json:"foto_selfie"`
+	CreatedAt   time.Time `json:"created_at"`
+}
+
 func (server *Server) register(ctx *gin.Context) {
 	var req models.Konsumen
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -49,21 +66,21 @@ func (server *Server) register(ctx *gin.Context) {
 	konsumen.FotoKTP = fotoKTP
 	konsumen.FotoSelfie = fotoSelfie
 
-	buildLimit := utilitize.NewFactoryLimit(konsumen)
-	limit := buildLimit.BuildLimit()
-
-	response, err := server.store.Register(konsumen, limit)
+	insertKonsumen, err := server.store.CreateKonsumen(konsumen)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
+	response, err := server.store.BuildProfile(*insertKonsumen)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 	ctx.JSON(http.StatusOK, response)
 }
 
 func (server *Server) profile(ctx *gin.Context) {
-
-	var response models.Register
 	authPayload := ctx.MustGet(authorizationPayloadKey).(ClientData)
 	id, err := uuid.Parse(authPayload.ClientPayload.UserID.String())
 	if err != nil {
@@ -76,14 +93,13 @@ func (server *Server) profile(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	response.Konsumen = *konsumen
 
-	limit, err := server.store.LimitGetByKonsumen(konsumen.ID)
+	response, err := server.store.BuildProfile(*konsumen)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	response.Limit = limit
+	ctx.JSON(http.StatusOK, response)
 
 	ctx.JSON(http.StatusOK, response)
 }

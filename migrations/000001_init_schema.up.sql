@@ -17,26 +17,15 @@ CREATE TABLE `konsumen` (
   CONSTRAINT uc_konsumen UNIQUE (`username`,`nik`)
 );
 
-CREATE TABLE `limit` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `konsumen_id` varchar(60) NOT NULL,
-  `tenor` tinyint(4) NOT NULL,
-  `limit` decimal(10,2) NOT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `limit_ibfk_1` (`konsumen_id`),
-  CONSTRAINT `limit_ibfk_1` FOREIGN KEY (`konsumen_id`) REFERENCES `konsumen` (`id`)
-);
-
 CREATE TABLE `kontrak` (
   `no` varchar(60) NOT NULL,
   `konsumen_id` varchar(60) NOT NULL,
   `otr` decimal(10,2) NOT NULL,
   `admin_fee` decimal(10,2) NOT NULL,
   `jml_cicilan` decimal(10,2) NOT NULL,
-  `jml_bunga` decimal(5,2) NOT NULL,
+  `jml_bunga` decimal(10,2) NOT NULL,
   `nama_asset` varchar(100) NOT NULL,
+  `tenor` tinyint(2) NOT NULL DEFAULT '0',
   `status` enum('inpg','done','cancel','fail') NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -46,19 +35,22 @@ CREATE TABLE `kontrak` (
   CONSTRAINT `kontrak_ibfk1` FOREIGN KEY (`konsumen_id`) REFERENCES `konsumen` (`id`)
 );
 
-CREATE TABLE `transaksi` (
+CREATE TABLE `tagihan` (
   `id` varchar(60) NOT NULL,
   `kontrak_no` varchar(60) NOT NULL,
-  `jenis` enum('debit','kredit') NOT NULL,
+  `jtp` date NOT NULL,
   `jml` decimal(10,2) NOT NULL,
+  `status` enum('loan','paid') NOT NULL,
+  `tgl_paid` date,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `transaksi_ibfk1` (`kontrak_no`),
-  CONSTRAINT `transaksi_ibfk1` FOREIGN KEY (`kontrak_no`) REFERENCES `kontrak` (`no`)
+  KEY `tagihan_ibfk1` (`kontrak_no`),
+  CONSTRAINT `tagihan_ibfk1` FOREIGN KEY (`kontrak_no`) REFERENCES `kontrak` (`no`)
 );
 
 CREATE TABLE `session` (
-  `id` text NOT NULL,
+  `id` varchar(60) NOT NULL,
   `konsumen_id` varchar(60) NOT NULL,
   `refresh_token` text NOT NULL,
   `user_agent` varchar(255) NOT NULL,
@@ -68,3 +60,17 @@ CREATE TABLE `session` (
   KEY `session_ibfk1` (`konsumen_id`),
   CONSTRAINT `session_ibfk1` FOREIGN KEY (`konsumen_id`) REFERENCES `konsumen` (`id`)
 );
+
+CREATE TABLE `config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) NOT NULL,
+  `desc` varchar(255) NOT NULL,
+  `constant` decimal(10,2) NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+
+INSERT INTO `config` (`id`, `name`, `desc`, `constant`) VALUES (1, 'Persen Gaji', 'DIgunakan untuk menghitung RPC dari gaji', 0.30);
+INSERT INTO `config` (`id`, `name`, `desc`, `constant`) VALUES (2, 'Bunga', 'Persentase bunga', 0.60);

@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/agilsyofian/kreditplus/utilitize"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -22,6 +23,23 @@ type Konsumen struct {
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+}
+
+type Profile struct {
+	Detail ProfileDetail     `json:"detail"`
+	Limit  []utilitize.Limit `json:"limit"`
+}
+
+type ProfileDetail struct {
+	NIK         int64     `json:"nik"`
+	FullName    string    `json:"full_name"`
+	LegalName   string    `json:"legal_name"`
+	TempatLahir string    `json:"tempat_lahir"`
+	TglLahir    string    `json:"tgl_lahir"`
+	Gaji        float64   `json:"gaji"`
+	FotoKTP     string    `json:"foto_ktp"`
+	FotoSelfie  string    `json:"foto_selfie"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func (db *Database) AuthKonsumen(username string) (*Konsumen, error) {
@@ -65,4 +83,29 @@ func (db *Database) SoftDeleteKonsumen(id uuid.UUID) (*Konsumen, error) {
 	}
 	err := db.KreditPlus.Delete(&konsumen).Error
 	return konsumen, err
+}
+
+func (db *Database) BuildProfile(k Konsumen) (*Profile, error) {
+
+	var response Profile
+	response.Detail = ProfileDetail{
+		NIK:         k.NIK,
+		FullName:    k.FullName,
+		LegalName:   k.LegalName,
+		TempatLahir: k.TempatLahir,
+		TglLahir:    k.TglLahir,
+		Gaji:        k.Gaji,
+		FotoKTP:     k.FotoKTP,
+		FotoSelfie:  k.FotoSelfie,
+		CreatedAt:   k.CreatedAt,
+	}
+
+	configDB, err := db.ConfigGet(1)
+	if err != nil {
+		return &response, err
+	}
+	limit := utilitize.NewFactoryLimit(k.Gaji, configDB.Constant)
+
+	response.Limit = limit.BuildLimit()
+	return &response, nil
 }

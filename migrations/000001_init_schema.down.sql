@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS `limit`;
+DROP TABLE IF EXISTS `transaksi`;
+DROP TABLE IF EXISTS `session`;
+DROP TABLE IF EXISTS `kontrak`;
+DROP TABLE IF EXISTS `konsumen`;

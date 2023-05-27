@@ -6,7 +6,7 @@ Steps:
 
 ```
 # Clone the project
-go get github.com/gpuenteallott/golang-mysql-docker-setup
+git clone https://github.com/agilsyofian/apploan.git
 
 # Run containers
 docker compose build

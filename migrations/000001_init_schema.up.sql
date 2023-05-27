@@ -17,17 +17,17 @@ CREATE TABLE `konsumen` (
   CONSTRAINT uc_konsumen UNIQUE (`username`,`nik`)
 );
 
--- CREATE TABLE `limit` (
---   `id` int(11) NOT NULL AUTO_INCREMENT,
---   `konsumen_id` varchar(60) NOT NULL,
---   `tenor` tinyint(4) NOT NULL,
---   `limit` decimal(10,2) NOT NULL,
---   `created_at` datetime NOT NULL,
---   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
---   PRIMARY KEY (`id`),
---   KEY `limit_ibfk_1` (`konsumen_id`),
---   CONSTRAINT `limit_ibfk_1` FOREIGN KEY (`konsumen_id`) REFERENCES `konsumen` (`id`)
--- );
+CREATE TABLE `limit` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `konsumen_id` varchar(60) NOT NULL,
+  `tenor` tinyint(4) NOT NULL,
+  `limit` decimal(10,2) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `limit_ibfk_1` (`konsumen_id`),
+  CONSTRAINT `limit_ibfk_1` FOREIGN KEY (`konsumen_id`) REFERENCES `konsumen` (`id`)
+);
 
 CREATE TABLE `kontrak` (
   `no` varchar(60) NOT NULL,

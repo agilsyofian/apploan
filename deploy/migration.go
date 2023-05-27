@@ -15,6 +15,9 @@ func main() {
 		fmt.Println("cannot load config")
 	}
 
+	fmt.Println(cfg.MigrationURL)
+	fmt.Println(cfg.DBDriver + "://" + cfg.DBSource)
+
 	m, err := migrate.New(cfg.MigrationURL, cfg.DBDriver+"://"+cfg.DBSource)
 	if err != nil {
 		fmt.Println("cannot create new migrate instance")

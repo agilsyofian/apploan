@@ -100,11 +100,16 @@ func (db *Database) BuildProfile(k Konsumen) (*Profile, error) {
 		CreatedAt:   k.CreatedAt,
 	}
 
+	cicilan, err := db.TagihanExist(k.ID)
+	if err != nil {
+		return &response, err
+	}
+
 	configDB, err := db.ConfigGet(1)
 	if err != nil {
 		return &response, err
 	}
-	limit := utilitize.NewFactoryLimit(k.Gaji, configDB.Constant)
+	limit := utilitize.NewFactoryLimit(k.Gaji, configDB.Constant, cicilan)
 
 	response.Limit = limit.BuildLimit()
 	return &response, nil

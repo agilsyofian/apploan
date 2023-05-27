@@ -8,19 +8,21 @@ type Limit struct {
 type LimitFactory struct {
 	PersenGaji float64
 	Gaji       float64
+	Cicilan    float64
 }
 
-func NewFactoryLimit(persenGaji, gaji float64) *LimitFactory {
+func NewFactoryLimit(persenGaji, gaji, cicilan float64) *LimitFactory {
 	return &LimitFactory{
 		PersenGaji: persenGaji,
 		Gaji:       gaji,
+		Cicilan:    cicilan,
 	}
 }
 
 func (l *LimitFactory) BuildLimit() []Limit {
 	var result []Limit
 
-	rpc := l.PersenGaji * l.Gaji
+	rpc := l.BuildRPC()
 	for i := 1; i <= 4; i++ {
 		result = append(result, Limit{
 			Tenor: int64(i),
@@ -29,4 +31,8 @@ func (l *LimitFactory) BuildLimit() []Limit {
 	}
 
 	return result
+}
+
+func (l *LimitFactory) BuildRPC() float64 {
+	return l.PersenGaji*l.Gaji - l.Cicilan
 }

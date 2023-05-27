@@ -16,6 +16,10 @@ func (Kontrak) TableName() string {
 	return "kontrak"
 }
 
+func (Tagihan) TableName() string {
+	return "tagihan"
+}
+
 func (Config) TableName() string {
 	return "config"
 }

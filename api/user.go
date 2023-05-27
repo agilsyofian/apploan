@@ -100,6 +100,4 @@ func (server *Server) profile(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, response)
-
-	ctx.JSON(http.StatusOK, response)
 }

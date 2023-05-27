@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomKontrak(t *testing.T) (*Kontrak, error) {
+func createRandomKontrak(t *testing.T) (*KontrakResponse, error) {
 	konsumen, _, err := createRandomKonsumen(t)
 	require.NoError(t, err)
 	require.NotEmpty(t, konsumen)
@@ -41,7 +41,7 @@ func TestGetKontrakKonsumen(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, kontrak)
 
-	result, err := testQueries.KontrakGetByKonsumen(kontrak.KonsumenID)
+	result, err := testQueries.KontrakGetByKonsumen(kontrak.Kontrak.KonsumenID)
 	require.NoError(t, err)
 	require.NotEmpty(t, result)
 }
@@ -51,11 +51,11 @@ func TestGetKontrakID(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, kontrak)
 
-	result, err := testQueries.KontrakGetByID(kontrak.No)
+	result, err := testQueries.KontrakGetByID(kontrak.Kontrak.No)
 	fmt.Println(result.No)
 	require.NoError(t, err)
 	require.NotEmpty(t, result)
-	require.Equal(t, kontrak.No, result.No)
+	require.Equal(t, kontrak.Kontrak.No, result.No)
 }
 
 func TestUpdateKontrak(t *testing.T) {
@@ -69,7 +69,7 @@ func TestUpdateKontrak(t *testing.T) {
 		JmlCicilan: jmlCicilan,
 		Status:     "cancel",
 	}
-	result, err := testQueries.KontrakUpdate(kontrak.No, updateData)
+	result, err := testQueries.KontrakUpdate(kontrak.Kontrak.No, updateData)
 	require.NoError(t, err)
 	require.NotEmpty(t, result)
 	require.Equal(t, jmlCicilan, result.JmlCicilan)

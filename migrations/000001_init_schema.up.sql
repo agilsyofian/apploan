@@ -72,5 +72,6 @@ CREATE TABLE `config` (
   PRIMARY KEY (`id`)
 );
 
-INSERT INTO `config` (`id`, `name`, `desc`, `constant`) VALUES (1, 'Persen Gaji', 'DIgunakan untuk menghitung RPC dari gaji', 0.30);
-INSERT INTO `config` (`id`, `name`, `desc`, `constant`) VALUES (2, 'Bunga', 'Persentase bunga', 0.60);
+INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('Persen Gaji', 'DIgunakan untuk menghitung RPC dari gaji', 0.30);
+INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('Admin Fee', 'Persentase admin fee', 0.05);
+INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('Bunga', 'Persentase bunga', 0.06);

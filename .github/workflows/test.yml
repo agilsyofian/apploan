@@ -11,10 +11,9 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-
+    container: database
     services:
       mysql:
-        container_name: database
         image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: root

@@ -19,7 +19,31 @@ func (server *Server) kontrakCreate(ctx *gin.Context) {
 
 	authPayload := ctx.MustGet(authorizationPayloadKey).(ClientData)
 
-	kontrakFact := utilitize.NewKontrak(req.Otr, 0.06, 0.05, req.Tenor)
+	config, err := server.store.ConfigGetList()
+	if err != nil {
+		err := errors.New("no config available in database")
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	bunga := float64(0)
+	fee := float64(0)
+	for _, cfg := range config {
+		if cfg.Name == "bunga" {
+			bunga = cfg.Constant
+		}
+		if cfg.Name == "fee" {
+			fee = cfg.Constant
+		}
+	}
+
+	if bunga == float64(0) || fee == float64(0) {
+		err := errors.New("mismatch config in database")
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	kontrakFact := utilitize.NewKontrak(req.Otr, bunga, fee, req.Tenor)
 	kontrakGen := kontrakFact.BuildKontrak()
 
 	noKontrak, _ := uuid.NewRandom()
@@ -54,6 +78,12 @@ func (server *Server) kontrakCreate(ctx *gin.Context) {
 		}
 	}
 
+	if limitTenor == float64(0) {
+		err := errors.New("invalid tenor")
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
 	if req.Otr > limitTenor {
 		err := errors.New("user limit reached")
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -66,5 +96,17 @@ func (server *Server) kontrakCreate(ctx *gin.Context) {
 		return
 	}
 
+	ctx.JSON(http.StatusOK, kontrak)
+}
+
+func (server *Server) kontrakList(ctx *gin.Context) {
+	authPayload := ctx.MustGet(authorizationPayloadKey).(ClientData)
+	konsumenID := authPayload.ClientPayload.UserID
+
+	kontrak, err := server.store.KontrakGetByKonsumen(konsumenID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 	ctx.JSON(http.StatusOK, kontrak)
 }

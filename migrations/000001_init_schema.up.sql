@@ -63,15 +63,16 @@ CREATE TABLE `session` (
 
 CREATE TABLE `config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(60) NOT NULL,
+  `name` enum('bunga','persengaji','fee') NOT NULL,
   `desc` varchar(255) NOT NULL,
   `constant` decimal(10,2) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uc_config` (`name`)
 );
 
-INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('Persen Gaji', 'DIgunakan untuk menghitung RPC dari gaji', 0.30);
-INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('Admin Fee', 'Persentase admin fee', 0.05);
-INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('Bunga', 'Persentase bunga', 0.06);
+INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('persengaji', 'DIgunakan untuk menghitung RPC dari gaji', 0.30);
+INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('fee', 'Persentase admin fee', 0.05);
+INSERT INTO `config` (`name`, `desc`, `constant`) VALUES ('bunga', 'Persentase bunga', 0.06);

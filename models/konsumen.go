@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/agilsyofian/kreditplus/utilitize"
@@ -105,11 +106,22 @@ func (db *Database) BuildProfile(k Konsumen) (*Profile, error) {
 		return &response, err
 	}
 
-	configDB, err := db.ConfigGet(1)
+	config, err := db.ConfigGetList()
 	if err != nil {
 		return &response, err
 	}
-	limit := utilitize.NewFactoryLimit(k.Gaji, configDB.Constant, cicilan)
+
+	persenGaji := float64(0)
+	for _, cfg := range config {
+		if cfg.Name == "persengaji" {
+			persenGaji = cfg.Constant
+		}
+	}
+	if persenGaji == float64(0) {
+		err := errors.New("no available config in database")
+		return &response, err
+	}
+	limit := utilitize.NewFactoryLimit(persenGaji, k.Gaji, cicilan)
 
 	response.Limit = limit.BuildLimit()
 	return &response, nil

@@ -40,7 +40,10 @@ func (server *Server) setupRouter() {
 
 	authRoutes := router.Group("/").Use(authMiddleware(server))
 	authRoutes.GET("/profile", server.profile)
+	authRoutes.GET("/kontrak", server.kontrakList)
 	authRoutes.POST("/kontrak", server.kontrakCreate)
+	authRoutes.GET("/tagihan/:id", server.tagihan)
+	authRoutes.POST("/tagihan/pay", server.tagihanPay)
 
 	// authRoutes.GET("/konsumen", server.KonsumenGetList)
 	// authRoutes.POST("/konsumen", server.konsumenCreate)

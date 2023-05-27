@@ -10,16 +10,8 @@ type Config struct {
 	gorm.Model
 }
 
-func (db *Database) ConfigCreate(data Config) (*Config, error) {
-	var payload Config = data
-	err := db.KreditPlus.Create(&payload).Error
-	return &payload, err
-}
-
-func (db *Database) ConfigGet(id int64) (*Config, error) {
-	result := &Config{
-		ID: id,
-	}
+func (db *Database) ConfigGetList() ([]Config, error) {
+	var result []Config
 	err := db.KreditPlus.Find(&result).Error
 	return result, err
 }

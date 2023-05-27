@@ -19,10 +19,11 @@ func createRandomKontrak(t *testing.T) (*KontrakResponse, error) {
 	payload := Kontrak{
 		No:         newUUID,
 		KonsumenID: konsumen.ID,
-		Otr:        float64(util.RandomInt(1000000, 5000000)),
+		Otr:        konsumen.Gaji / 2,
 		AdminFee:   float64(util.RandomInt(100000, 500000)),
 		JmlCicilan: float64(util.RandomInt(100000, 500000)),
 		JmlBunga:   float64(util.RandomInt(0, 1)),
+		Tenor:      util.RandomInt(1, 4),
 		NamaAsset:  util.RandomString(10),
 		Status:     "inpg",
 	}
@@ -52,6 +53,18 @@ func TestGetKontrakID(t *testing.T) {
 	require.NotEmpty(t, kontrak)
 
 	result, err := testQueries.KontrakGetByID(kontrak.Kontrak.No)
+	fmt.Println(result.No)
+	require.NoError(t, err)
+	require.NotEmpty(t, result)
+	require.Equal(t, kontrak.Kontrak.No, result.No)
+}
+
+func TestGetKontrakTagihan(t *testing.T) {
+	kontrak, err := createRandomKontrak(t)
+	require.NoError(t, err)
+	require.NotEmpty(t, kontrak)
+
+	result, err := testQueries.KontrakGetByTagihan(kontrak.Tagihan[0].ID.String())
 	fmt.Println(result.No)
 	require.NoError(t, err)
 	require.NotEmpty(t, result)

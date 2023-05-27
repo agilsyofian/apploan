@@ -27,16 +27,18 @@ func (e StatusKontrak) Value() (driver.Value, error) {
 }
 
 type Kontrak struct {
-	No         uuid.UUID     `json:"no" gorm:"column:no;primaryKey"`
-	KonsumenID uuid.UUID     `json:"konsumen_id" gorm:"column:konsumen_id;<-:create"`
-	Otr        float64       `json:"otr" gorm:"column:otr" binding:"required"`
-	AdminFee   float64       `json:"admin_fee" gorm:"column:admin_fee"`
-	JmlCicilan float64       `json:"jml_cicilan" gorm:"column:jml_cicilan"`
-	JmlBunga   float64       `json:"jml_bunga" gorm:"column:jml_bunga"`
-	NamaAsset  string        `json:"nama_asset" gorm:"column:nama_asset" binding:"required"`
-	Tenor      int64         `json:"tenor" gorm:"column:tenor;" binding:"required"`
-	Status     StatusKontrak `json:"status" gorm:"column:status" sql:"type:ENUM('inpg', 'done','cancel','fail')"`
-	gorm.Model
+	No         uuid.UUID      `json:"no" gorm:"column:no;primaryKey"`
+	KonsumenID uuid.UUID      `json:"-" gorm:"column:konsumen_id;<-:create"`
+	Otr        float64        `json:"otr" gorm:"column:otr" binding:"required"`
+	AdminFee   float64        `json:"admin_fee" gorm:"column:admin_fee"`
+	JmlCicilan float64        `json:"jml_cicilan" gorm:"column:jml_cicilan"`
+	JmlBunga   float64        `json:"jml_bunga" gorm:"column:jml_bunga"`
+	NamaAsset  string         `json:"nama_asset" gorm:"column:nama_asset" binding:"required"`
+	Tenor      int64          `json:"tenor" gorm:"column:tenor;" binding:"required"`
+	Status     StatusKontrak  `json:"status" gorm:"column:status" sql:"type:ENUM('inpg', 'done','cancel','fail')"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"-"`
+	DeletedAt  gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 type KontrakResponse struct {
@@ -62,7 +64,7 @@ func (db *Database) KontrakCreate(data Kontrak) (*KontrakResponse, error) {
 		return nil, err
 	}
 
-	tagihan := kontrak.Tagihan()
+	tagihan := kontrak.GenerateTagihan()
 	if err := tx.Create(&tagihan).Error; err != nil {
 		tx.Rollback()
 		return nil, err
@@ -78,7 +80,7 @@ func (db *Database) KontrakCreate(data Kontrak) (*KontrakResponse, error) {
 	return &result, nil
 }
 
-func (k *Kontrak) Tagihan() []Tagihan {
+func (k *Kontrak) GenerateTagihan() []Tagihan {
 	var tagihan []Tagihan
 	curTime := time.Now()
 	for i := 0; i < int(k.Tenor); i++ {
@@ -110,6 +112,13 @@ func (db *Database) KontrakGetByID(id uuid.UUID) (*Kontrak, error) {
 	}
 	err := db.KreditPlus.Find(&result).Error
 	return result, err
+}
+
+func (db *Database) KontrakGetByTagihan(tagihanID string) (Kontrak, error) {
+	var kontrak Kontrak
+	model := db.KreditPlus.Model(&Tagihan{}).Joins("JOIN kontrak ON tagihan.kontrak_no = kontrak.no AND tagihan.id = ?", tagihanID)
+	err := model.Select("kontrak.*").Scan(&kontrak).Error
+	return kontrak, err
 }
 
 func (db *Database) KontrakUpdate(id uuid.UUID, payload *Kontrak) (*Kontrak, error) {

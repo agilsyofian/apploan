@@ -12,8 +12,8 @@ dropdb:
 migrate:
 	go run migrations/migrate.go
 
-sqlc:
-	sqlc generate
+migrateup:
+	go run deploy/migration.go
 
 test:
 	go test -v -cover -short ./...
@@ -21,7 +21,4 @@ test:
 server:
 	go run main.go
 
-mock:
-	mockgen -package mockdb -destination db/mock/store.go github.com/agilsyofian/minibank/db/sqlc Store
-
-.PHONY: runmysql createdb dropdb migrate test server mock
+.PHONY: runmysql createdb dropdb migrate migrateup test server

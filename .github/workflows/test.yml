@@ -15,9 +15,10 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: password
         ports:
-          - 3306:3306
+        - 32574:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
 
@@ -33,7 +34,7 @@ jobs:
     - name: Create database 
       run: |
         sudo apt-get install -y mysql-client
-        mysql --host --host 127.0.0.1 --port 32574 -uroot -proot -e "CREATE DATABASE kreditplus"
+        mysql --host 127.0.0.1 --port 32574 -uroot -proot -e "CREATE DATABASE kreditplus"
 
     - name: Run migrations
       run: make migrateup

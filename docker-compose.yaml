@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  db:
+    container_name: mysql
+    image: mysql:5.7
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=kreditplus
+    healthcheck:
+        test: ["CMD", "mysqladmin", "ping"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: apploan
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - "db:database"
+    command: [ "/app/main" ]
